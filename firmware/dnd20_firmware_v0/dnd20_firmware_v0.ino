@@ -18,16 +18,20 @@ RgbColor RED(colorSaturation, 0, 0);
 RgbColor GREEN(0, colorSaturation, 0);
 RgbColor BLUE(0, 0, colorSaturation);
 RgbColor YELLOW(colorSaturation >> 1, colorSaturation >> 1, 0);
-RgbColor YELLOW(colorSaturation >> 2, 0, colorSaturation);
+RgbColor PURPLE(colorSaturation >> 2, 0, colorSaturation);
 RgbColor BLACK(0);
 
 const int STANDBY     = 0;
 const int ROLLING     = 1;
-const int DISPLAY     = 2;
+const int DISPLAY_ROLL     = 2;
 const int PROGMODE    = 3;
 const int WIFI_CONFIG = 4;
 
 const int BUTTON_PIN = 8; //TODO
+
+unsigned long seed = 0;
+int roll = 1;
+int die_sidedness = 20;
 
 /*
 Standby Mode
@@ -42,7 +46,7 @@ int standby()
   int next_state = STANDBY;
 
   // Check for a roll
-  const int NUM_READINGS = 10
+  const int NUM_READINGS = 10;
   const int ACCELERATION_THRESHOLD = 75; //TODO
   static int accelerometer_readings[NUM_READINGS];
   static int index = 0;
@@ -79,21 +83,19 @@ int standby()
 Rolling Mode
  - Calculates the roll value from accelerometer data
 
- - Moves on to Display Roll mode once settled
+ - Moves on to DISPLAY_ROLL Roll mode once settled
 */
-unsigned long seed = get_accelerometer_magnitude()*get_accelerometer_magnitude();
-int roll = 1;
 int rolling()
 {
-  int next_state = DISPLAY;
+  int next_state = DISPLAY_ROLL;
   randomSeed(seed);
   roll = (int)random(die_sidedness) + 1;
   return next_state;
 }
 
 /*
-Display Roll Mode
- - Displays the roll value on the screen
+DISPLAY_ROLL Roll Mode
+ - DISPLAY_ROLLs the roll value on the screen
  - Lights up the LED to appropriate color (eventually will animate)
  - Sends an HTTP POST request to Discord
 
@@ -102,7 +104,7 @@ Display Roll Mode
 int display_roll()
 {
   int next_state = STANDBY;
-  // update the display
+  // update the DISPLAY_ROLL
 
   // update the LED
   if(roll == die_sidedness)
@@ -126,16 +128,15 @@ int display_roll()
 /*
 Programming Mode
  - Allows you to cycle through types of die (i.e. d20, d4, etc)
- - Displays the current sidedness of the die
+ - DISPLAY_ROLLs the current sidedness of the die
 
  - Can move back to Standby Mode with button press and hold
 */
-int die_sidedness = 20;
 int progmode()
 {
   int next_state = PROGMODE;
   const int MAX_SIDEDNESS = 20;
-  static new_sidedness = 2;
+  static int new_sidedness = 2;
 
   set_strip_color(GREEN);
 
