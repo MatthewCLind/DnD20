@@ -3,9 +3,23 @@
  * Author / cobbler: Matthew Lind
  * 
  * Code cobbled together from these sources:
- * 
+ * https://playground.arduino.cc/Main/MMA7455
+ * https://github.com/Makuna/NeoPixelBus
+ * https://github.com/adafruit/Adafruit_SSD1306
  * 
  */
+
+#include <NeoPixelBus.h>
+const uint16_t PixelCount = 1;
+// assumes GPIO3 for ESP8266
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount);
+uint8_t colorSaturation = 128;
+RgbColor RED(colorSaturation, 0, 0);
+RgbColor GREEN(0, colorSaturation, 0);
+RgbColor BLUE(0, 0, colorSaturation);
+RgbColor YELLOW(colorSaturation >> 1, colorSaturation >> 1, 0);
+RgbColor YELLOW(colorSaturation >> 2, 0, colorSaturation);
+RgbColor BLACK(0);
 
 const int STANDBY     = 0;
 const int ROLLING     = 1;
@@ -29,7 +43,7 @@ int standby()
 
   // Check for a roll
   const int NUM_READINGS = 10
-  const int ACCELERATION_THRESHOLD = 20; //TODO
+  const int ACCELERATION_THRESHOLD = 75; //TODO
   static int accelerometer_readings[NUM_READINGS];
   static int index = 0;
 
@@ -53,14 +67,9 @@ int standby()
 
   // Check for a button press + hold
   const long BUTTON_HOLD_TIME = 3000; //ms
-  long start_time = millis();
-  while(digitalRead(BUTTON_PIN) == LOW)
+  if(button_hold(BUTTON_PIN, 5) > BUTTON_HOLD_TIME)
   {
-    if(millis() >= start_time + BUTTON_HOLD_TIME)
-    {
       next_state = PROGMODE;
-      break;
-    }
   }
   
   return next_state;
@@ -98,15 +107,15 @@ int display_roll()
   // update the LED
   if(roll == die_sidedness)
   {
-    // GOLD
+    set_strip_color(YELLOW);
   }
   else if(roll == 1)
   {
-    // RED
+    set_strip_color(RED);
   }
   else
   {
-    // CYAN
+    set_strip_color(BLUE);
   }
 
   // send HTTP POST to Discord Server
@@ -128,20 +137,15 @@ int progmode()
   const int MAX_SIDEDNESS = 20;
   static new_sidedness = 2;
 
-  // TODO turn LED on green
+  set_strip_color(GREEN);
 
   const int BUTTON_HOLD = 3000; //ms
-  long start_time = millis();
-  while(digitalRead(BUTTON_PIN) == LOW)
-  {
-    // wait for release
-  }
-
-  if(millis() > start_time + BUTTON_HOLD)
+  int press_time = button_hold(BUTTON_PIN, 5);
+  if(press_time > BUTTON_HOLD)
   {
     die_sidedness = new_sidedness;
     // TODO save new_sidedness to PROGMEM
-    // TODO turn LED off
+    set_strip_color(BLACK);
     next_state = STANDBY;
   }
   else
@@ -167,6 +171,13 @@ int wifi_config()
 {
   int next_state = WIFI_CONFIG;
   // TODO Serve the website
+
+  set_strip_color(PURPLE);
+  const int BUTTON_HOLD_TIME = 3000; //ms
+  if(button_hold(BUTTON_PIN, 5) > BUTTON_HOLD_TIME)
+  {
+    next_state = STANDBY;
+  }
   return next_state;
 }
 
@@ -174,7 +185,38 @@ int get_accelerometer_magnitude()
 {
   // TODO
   int magnitude = 0;
+  magnitude = random(10);
   return magnitude;
+}
+
+int button_hold(int btn_pin)
+{
+  long start_time = millis();
+  while(digitalRead(btn_pin) == LOW)
+  {
+    // wait for release
+  }
+  return (int)millis() - start_time;
+}
+
+int button_hold(int btn_pin, int debounce)
+{
+  long start_time = millis();
+  while(digitalRead(btn_pin) == LOW)
+  {
+    // wait for release
+    delay(debounce);
+  }
+  return (int)millis() - start_time;
+}
+
+void set_strip_color(RgbColor c)
+{
+  for(int i = 0; i < PixelCount; i++)
+  {
+    strip.SetPixelColor(i, c);
+  }
+  strip.Show();
 }
 
 typedef int (* Generic_State_Function_Array)();
@@ -183,7 +225,11 @@ Generic_State_Function_Array DnD20_States[5] =
 
 void setup()
 {
+  Serial.begin(9600);
 
+  // LED
+  strip.Begin();
+  strip.Show();
 }
 
 void loop()
