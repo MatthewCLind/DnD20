@@ -19,15 +19,16 @@ RgbColor GREEN(0, colorSaturation, 0);
 RgbColor BLUE(0, 0, colorSaturation);
 RgbColor YELLOW(colorSaturation >> 1, colorSaturation >> 1, 0);
 RgbColor PURPLE(colorSaturation >> 2, 0, colorSaturation);
+RgbColor WHITE(colorSaturation >> 2, colorSaturation >> 2, colorSaturation >> 2); 
 RgbColor BLACK(0);
 
-const int STANDBY     = 0;
-const int ROLLING     = 1;
-const int DISPLAY_ROLL     = 2;
-const int PROGMODE    = 3;
-const int WIFI_CONFIG = 4;
+const int STANDBY       = 0;
+const int ROLLING       = 1;
+const int DISPLAY_ROLL  = 2;
+const int PROGMODE      = 3;
+const int WIFI_CONFIG   = 4;
 
-const int BUTTON_PIN = 8; //TODO
+const int BUTTON_PIN = 14; //TODO
 
 unsigned long seed = 0;
 int roll = 1;
@@ -47,19 +48,20 @@ int standby()
 
   // Check for a roll
   const int NUM_READINGS = 10;
-  const int ACCELERATION_THRESHOLD = 75; //TODO
+  const int ACCELERATION_THRESHOLD = 87; //TODO
   static int accelerometer_readings[NUM_READINGS];
   static int index = 0;
 
   // include latest reading into our vector
   accelerometer_readings[index] = get_accelerometer_magnitude();
-  index = (index + 1) % NUM_READINGS;
+  index = (index + 1) % (NUM_READINGS + 1);
   
   int total_acceleration = 0;
   for(int i = 0; i < NUM_READINGS; i++)
   {
     total_acceleration += abs(accelerometer_readings[i]);
   }
+  
   //global seed
   seed += total_acceleration;
 
@@ -104,7 +106,9 @@ DISPLAY_ROLL Roll Mode
 int display_roll()
 {
   int next_state = STANDBY;
-  // update the DISPLAY_ROLL
+  
+  // update the display
+  update_OLED(roll);
 
   // update the LED
   if(roll == die_sidedness)
@@ -141,6 +145,7 @@ int progmode()
   set_strip_color(GREEN);
 
   const int BUTTON_HOLD = 3000; //ms
+  const int BUTTON_PRESS = 20; //ms
   int press_time = button_hold(BUTTON_PIN, 5);
   if(press_time > BUTTON_HOLD)
   {
@@ -149,14 +154,15 @@ int progmode()
     set_strip_color(BLACK);
     next_state = STANDBY;
   }
-  else
+  else if(press_time > BUTTON_PRESS)
   {
-    new_sidedness = (new_sidedness + 1)%MAX_SIDEDNESS;
+    new_sidedness = (new_sidedness + 1) % (MAX_SIDEDNESS + 1);
     if(new_sidedness < 2)
     {
       new_sidedness = 2;
     }
   }
+  update_OLED(new_sidedness);
   return next_state;
 }
 
@@ -179,6 +185,7 @@ int wifi_config()
   {
     next_state = STANDBY;
   }
+  
   return next_state;
 }
 
@@ -186,7 +193,7 @@ int get_accelerometer_magnitude()
 {
   // TODO
   int magnitude = 0;
-  magnitude = random(10);
+  magnitude = random(11);
   return magnitude;
 }
 
@@ -197,6 +204,7 @@ int button_hold(int btn_pin)
   {
     // wait for release
   }
+
   return (int)millis() - start_time;
 }
 
@@ -220,6 +228,12 @@ void set_strip_color(RgbColor c)
   strip.Show();
 }
 
+void update_OLED(int value)
+{
+  // TODO
+  Serial.println(value);
+}
+
 typedef int (* Generic_State_Function_Array)();
 Generic_State_Function_Array DnD20_States[5] = 
     {standby, rolling, display_roll, progmode, wifi_config};
@@ -228,6 +242,8 @@ void setup()
 {
   Serial.begin(9600);
 
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+
   // LED
   strip.Begin();
   strip.Show();
@@ -235,6 +251,6 @@ void setup()
 
 void loop()
 {
-  static int next_state = 0;
+  static int next_state = WIFI_CONFIG;
   next_state = DnD20_States[next_state]();
 }
