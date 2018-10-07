@@ -9,11 +9,23 @@
  * 
  */
 
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h> 
+#include <ESP8266WebServer.h>
+
+String ssid            = "";
+String password        = "";
+String discord_server  = "/api/webhooks/493947255796137997/UPfq26OFyCuKDLWLVQOe3MGuSH7aD9c-b3EhTGrzPNNXpCxKqHcB5UX-khEHoG9yidwE";
+String player_name     = "Matt";
+ESP8266WebServer server(80);
+boolean server_running = false;
+
+
 #include <NeoPixelBus.h>
 const uint16_t PixelCount = 1;
 // assumes GPIO3 for ESP8266
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount);
-uint8_t colorSaturation = 128;
+uint8_t colorSaturation = 66;
 RgbColor RED(colorSaturation, 0, 0);
 RgbColor GREEN(0, colorSaturation, 0);
 RgbColor BLUE(0, 0, colorSaturation);
@@ -21,6 +33,13 @@ RgbColor YELLOW(colorSaturation >> 1, colorSaturation >> 1, 0);
 RgbColor PURPLE(colorSaturation >> 2, 0, colorSaturation);
 RgbColor WHITE(colorSaturation >> 2, colorSaturation >> 2, colorSaturation >> 2); 
 RgbColor BLACK(0);
+
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define OLED_RESET 4
+Adafruit_SSD1306 display(16);
 
 const int STANDBY       = 0;
 const int ROLLING       = 1;
@@ -125,6 +144,12 @@ int display_roll()
   }
 
   // send HTTP POST to Discord Server
+  if(WiFi.status() == WL_CONNECTED)
+  {
+    send_http_request(roll);
+    yield();
+  }
+  
   return next_state;
 }
 
@@ -177,13 +202,24 @@ WiFi Configuration mode
 int wifi_config()
 {
   int next_state = WIFI_CONFIG;
-  // TODO Serve the website
-
   set_strip_color(PURPLE);
   const int BUTTON_HOLD_TIME = 3000; //ms
-  if(button_hold(BUTTON_PIN, 5) > BUTTON_HOLD_TIME)
+  yield();
+  if(ssid != "" && password != "" && discord_server != "" && start_client())
   {
     next_state = STANDBY;
+  }
+  else if(button_hold(BUTTON_PIN, 5) > BUTTON_HOLD_TIME)
+  {
+    next_state = STANDBY;
+  }
+  else if(!server_running)
+  {
+    start_server();
+  }
+  else if(server_running)
+  {
+    server.handleClient();
   }
   
   return next_state;
@@ -203,6 +239,7 @@ int button_hold(int btn_pin)
   while(digitalRead(btn_pin) == LOW)
   {
     // wait for release
+    yield();
   }
 
   return (int)millis() - start_time;
@@ -215,6 +252,7 @@ int button_hold(int btn_pin, int debounce)
   {
     // wait for release
     delay(debounce);
+    yield();
   }
   return (int)millis() - start_time;
 }
@@ -230,9 +268,129 @@ void set_strip_color(RgbColor c)
 
 void update_OLED(int value)
 {
-  // TODO
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.print("   ");
+  display.println(value);
+  display.display();
   Serial.println(value);
 }
+
+void handleRoot() 
+{
+  const String website = "<h1>DnD20</h1> <form action='/submit' method='post'> <h2>WiFi Credentials</h2> SSID<input name='SSID' type='text'><br> password <input name='password' type='password'><br> <h2>Discord Info</h2> Server URL <input name='discord-server' type='text'><br> <input type='submit'> </form>";
+  server.send(200, "text/html", website);
+}
+
+void handleSubmit()
+{
+  for (uint8_t i=0; i<server.args(); i++)
+  {
+    String argname = server.argName(i);
+    String val = server.arg(i);
+    if(argname == "SSID")
+    {
+      ssid = val;
+      Serial.println("SSID: " + ssid);
+    }
+    else if(argname == "discord-server")
+    {
+      //discord_server = val;
+    }
+    else if(argname == "password")
+    {
+      password = val;
+      Serial.println("password: " + password);
+    }
+  }
+  server.send(200, "text/html", "A OK");
+}
+
+void start_server()
+{
+  const char* AP_SSID     = "DnD20";
+  const char* AP_PASSWORD = "prestidigitation";
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(AP_SSID, AP_PASSWORD);
+
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(myIP);
+  server.on("/", handleRoot);
+  server.on("/submit", handleSubmit);
+  server.begin();
+  Serial.println("HTTP server started");  
+  server_running = true;
+}
+
+void shutdown_server()
+{
+  WiFi.softAPdisconnect();
+  server.stop();
+  yield();
+  server_running = false;
+}
+
+boolean start_client()
+{
+  if(server_running)
+  {
+    shutdown_server();
+  }
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid.c_str(), password.c_str());
+  yield();
+  long timeout = millis() + 10000; //ms
+  Serial.println("starting up client");
+  while(timeout > millis())
+  {
+    // wait 10 seconds to try to connect
+    yield();
+  }
+  if(WiFi.status() != WL_CONNECTED)
+  {
+    password = "";
+    ssid = "";
+    //discord-server == "";
+    //player_name = "";
+  }
+  return WiFi.status() == WL_CONNECTED;
+}
+
+void send_http_request(int roll)
+{
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  const int httpPort = 80;
+  if (!client.connect("www.discordapp.com", httpPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+
+  // This will send the request to the server
+  client.print(String("POST ") + discord_server + " HTTPS/1.1\r\n" + 
+                "Host: www.discordapp.com" + "\r\n" +
+                "Content-Type: application/json\r\n" +
+               "Connection: close\r\n" +
+               player_name + " rolled: " +
+               roll +
+               "\r\n\r\n");
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+  
+  // Read all the lines of the reply from server and print them to Serial
+  while(client.available()){
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+  }
+}
+
 
 typedef int (* Generic_State_Function_Array)();
 Generic_State_Function_Array DnD20_States[5] = 
@@ -247,10 +405,20 @@ void setup()
   // LED
   strip.Begin();
   strip.Show();
+
+  // OLED
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.clearDisplay();
+  display.setTextSize(3);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.println(" DnD20");
+  display.display();
 }
 
 void loop()
 {
   static int next_state = WIFI_CONFIG;
   next_state = DnD20_States[next_state]();
+  delay(1);
 }
