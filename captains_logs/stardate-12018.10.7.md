@@ -1,6 +1,6 @@
 # DnD20 - Oct 6 2018
 
-/edit: this story has a happy ending/
+*edit: this story has a happy ending*
 
 Last night I was thinking about how there are two different configuration modes. There's the mode where you can select the die sidedness, and the mode where you set up wifi. I think these should be combined. Whenever you enter into *The* configuration mode, you will launch the wifi AP (btw, in the future the website should be made available on your wireless network once the credentials are put in).
 
@@ -33,14 +33,14 @@ Another improvement to make is to have the button press & hold functionality dis
 * This works for me @ discord:
     * ` curl -H "Content-type: application/json" -X POST -d '{"username": "ROBOTO", "content": "content of content"}'https://discordapp.com/api/webhooks/####/##### `
 * Here's what I get back from @ HTTPBIN:
-    * `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+    * ` <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <title>405 Method Not Allowed</title>
 <h1>Method Not Allowed</h1>
-<p>The method is not allowed for the requested URL.</p>`
+<p>The method is not allowed for the requested URL.</p> `
     * possibly because it doesn't want JSON data? or is it the POST?
     * it was the post and the URL
 * second try:
-    * `{
+    * ` {
   "headers": {
     "Accept": "*/*",
     "Connection": "close",
@@ -49,7 +49,7 @@ Another improvement to make is to have the button press & hold functionality dis
     "Host": "httpbin.org",
     "User-Agent": "curl/7.52.1"
   }
-}`
+} `
 
 
 * Hitting some issues with I2C dropping after going through the WiFi routine
@@ -60,7 +60,7 @@ Another improvement to make is to have the button press & hold functionality dis
 Connection: close
 Server: Cowboy
 Date: Mon, 08 Oct 2018 00:50:32 GMT
-Content-Length: 0`
+Content-Length: 0 `
 * This is what my code looks like:
 * NOTE: discord_server = "/headers"
     * ` void send_http_request(int roll)
@@ -102,7 +102,7 @@ Content-Length: 0`
 * I'm getting 302 errord (FOUND). I'm pretty sure it is because I'm trying HTTP and not HTTPS
 * In case you were wondering, you can't simply change the HTTP/1.1 to HTTPS/1.1 ... 
      * No, no. Haha, no wrong of course not. That would be too easy.
-     * The /real/ way to do it is to change `WifiClient client` to `WifiClientSecure client`. Sophisticated. Refined.
+     * The *real* way to do it is to change ` WifiClient client` to `WifiClientSecure client `. Sophisticated. Refined.
      * Ah, shoot. Don't forget to change the library #include statement too
      * Well I don't know, it crashes.
      
