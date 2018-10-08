@@ -33,14 +33,14 @@ Another improvement to make is to have the button press & hold functionality dis
 * This works for me @ discord:
     * ` curl -H "Content-type: application/json" -X POST -d '{"username": "ROBOTO", "content": "content of content"}'https://discordapp.com/api/webhooks/####/##### `
 * Here's what I get back from @ HTTPBIN:
-    * ` <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+    * ``` <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <title>405 Method Not Allowed</title>
 <h1>Method Not Allowed</h1>
-<p>The method is not allowed for the requested URL.</p> `
+<p>The method is not allowed for the requested URL.</p> ```
     * possibly because it doesn't want JSON data? or is it the POST?
     * it was the post and the URL
 * second try:
-    * ` {
+    * ``` {
   "headers": {
     "Accept": "*/*",
     "Connection": "close",
@@ -49,21 +49,21 @@ Another improvement to make is to have the button press & hold functionality dis
     "Host": "httpbin.org",
     "User-Agent": "curl/7.52.1"
   }
-} `
+} ```
 
 
 * Hitting some issues with I2C dropping after going through the WiFi routine
     * This only occurs if I hardcode in my router credentials and start immediately into client mode
     
 * This is what I get back from HTTPBIN:
-    * ` HTTP/1.1 400 Bad Request
+    * ``` HTTP/1.1 400 Bad Request
 Connection: close
 Server: Cowboy
 Date: Mon, 08 Oct 2018 00:50:32 GMT
-Content-Length: 0 `
+Content-Length: 0 ```
 * This is what my code looks like:
 * NOTE: discord_server = "/headers"
-    * ` void send_http_request(int roll)
+    * ``` void send_http_request(int roll)
 {
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
@@ -95,7 +95,7 @@ Content-Length: 0 `
     String line = client.readStringUntil('\r');
     Serial.print(line);
   }
-} `
+} ```
     * The payload wasn't in JSON format, maybe that is the issue? Yes.
 
 
