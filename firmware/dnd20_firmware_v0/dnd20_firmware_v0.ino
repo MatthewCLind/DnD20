@@ -629,12 +629,6 @@ int wifi_config()
   {
     server.handleClient();
   }
-
-  if(next_state == STANDBY)
-  {
-    
-    initialize_devices();
-  }
   
   return next_state;
 }
