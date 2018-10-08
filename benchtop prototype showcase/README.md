@@ -1,8 +1,11 @@
 # Benchtop Prototype
+
 **Rolling a Nat 20**
+
 ![critical](nat20.gif)
 
 ### 1. Connect to WiFi
+
 ![wifi](wifimode.jpg)
 
 When DnD20 first starts, the LED will be purple (it looks more purple IRL). This means that you are ready to enter in your WiFi credentials to get it logged on. 
