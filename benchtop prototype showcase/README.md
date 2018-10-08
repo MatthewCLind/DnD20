@@ -1,5 +1,5 @@
 # Benchtop Prototype
-** Rolling a Nat 20 **
+**Rolling a Nat 20**
 ![critical](nat20.gif)
 
 ### 1. Connect to WiFi
@@ -8,7 +8,8 @@
 When DnD20 first starts, the LED will be purple (it looks more purple IRL). This means that you are ready to enter in your WiFi credentials to get it logged on. 
 
 ![wifi](wifi.png)
-* the password is prestidigitation *
+
+*the password is prestidigitation*
 
 Alternatively, you can skip this step and start rolling without internet connection by pressing and holding the button.
 
@@ -61,6 +62,8 @@ The next step here is to design a PCB. I mean, I could solder it up, but PCBs ar
 I'm going to use this project as an opportunity to use the FreeCAD Stepup plugin to generate a board layer from an mCAD file.
 
 ### Functionality
+
+
 **Programming Mode**
 * I want to combine the WiFi setup with the program mode, it makes more sense to have a single programming mode
 * Then, I want to have the Web App always hosted in programming mode. It will be accessible through the hosted Access Point if the WiFi isn't setup, or through the local network if it is connected
