@@ -32,15 +32,19 @@ Another improvement to make is to have the button press & hold functionality dis
 * CURL info: [birdie0 discord webhooks](https://birdie0.github.io/discord-webhooks-guide/tools/curl.html)
 * This works for me @ discord:
     * ` curl -H "Content-type: application/json" -X POST -d '{"username": "ROBOTO", "content": "content of content"}'https://discordapp.com/api/webhooks/####/##### `
+    
 * Here's what I get back from @ HTTPBIN:
+
 ``` HTML
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <title>405 Method Not Allowed</title>
 <h1>Method Not Allowed</h1>
-<p>The method is not allowed for the requested URL.</p> 
-```
-    * possibly because it doesn't want JSON data? or is it the POST?
-    * it was the post and the URL
+<p>The method is not allowed for the requested URL.</p>
+``` 
+
+* possibly because it doesn't want JSON data? or is it the POST?
+* it was the post and the URL
+
 * second try:
 ``` Javascript
 {
@@ -70,6 +74,7 @@ Content-Length: 0
 
 * This is what my code looks like:
 * NOTE: discord_server = "/headers"
+
 ``` C++
 void send_http_request(int roll)
 {
@@ -105,7 +110,7 @@ void send_http_request(int roll)
   }
 } 
 ```
-    * The payload wasn't in JSON format, maybe that is the issue? Yes.
+* The payload wasn't in JSON format, maybe that is the issue? Yes.
 
 
 * I'm getting 302 errord (FOUND). I'm pretty sure it is because I'm trying HTTP and not HTTPS
@@ -122,7 +127,7 @@ void send_http_request(int roll)
 * It looks like the issue is that the server isn't reading the data as json data
 
 # **SUCCESS!!!!!**
-**Every single piece piece of functionality now works together!** (if not all together)
+**Every single piece piece of functionality now works together!**
 
 
 * After fiddling around getting all of the carriage returns and newlines right in the data, I also managed to get the JSON format right haha
