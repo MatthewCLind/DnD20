@@ -1,4 +1,4 @@
-# DnD20 - Oct 6 2018
+# DnD20 - Oct 7 2018
 
 *edit: this story has a happy ending*
 
