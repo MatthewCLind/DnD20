@@ -3,7 +3,7 @@
 * To model a regular icosohedron in FreeCAD, what you do is make 3 perpendicular golden rectangles, then connect their corners with edges.
 
 
-![Golden Rectangles](https://github.com/MatthewCLind/DnD20/blob/master/MCAD/screenshots/golden-rects.png)
+![Golden Rectangles](https://github.com/MatthewCLind/DnD20/blob/master/MCAD/screenshots/golden_rect.png)
 
 
 * Then you turn the edges into faces, the faces into a shell, and the shell into a solid
