@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name nano_server-rescue)(type Legacy)(uri ${KIPRJMOD}/nano_server-rescue.lib)(options "")(descr ""))
+  (lib (name nano_server)(type Legacy)(uri ${KIPRJMOD}/nano_server.lib)(options "")(descr ""))
+)
