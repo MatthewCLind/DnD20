@@ -404,7 +404,10 @@ String ssid            = "";
 String password        = "";
 String url  = "/api/webhooks/493947255796137997/UPfq26OFyCuKDLWLVQOe3MGuSH7aD9c-b3EhTGrzPNNXpCxKqHcB5UX-khEHoG9yidwE";
 String host = "discordapp.com";
-String player_name     = "Matt-bot";
+String bot_name     = "Matt-bot";
+const String MAGIC_8	= "Magic 8 Ball";
+const String D20        = "D20";
+String game_type = D20;
 ESP8266WebServer server(80);
 boolean server_running = false;
 
@@ -427,7 +430,6 @@ const int ROLLING       = 1;
 const int DISPLAY_ROLL  = 2;
 const int ROLL_TIMEOUT  = 3;
 const int PROGMODE      = 4;
-const int WIFI_CONFIG   = 5;
 
 const int BUTTON_PIN = 14; //TODO
 
@@ -446,6 +448,7 @@ Standby Mode
 int standby()
 {
   int next_state = STANDBY;
+  //Serial.println("STANDBY");
 
   // Check for a roll
   const int NUM_READINGS = 10;
@@ -500,6 +503,7 @@ Rolling Mode
 */
 int rolling()
 {
+  //Serial.println("ROLLING");
   int next_state = DISPLAY_ROLL;
   randomSeed(seed);
   roll = (int)random(die_sidedness) + 1;
@@ -516,30 +520,42 @@ DISPLAY_ROLL Roll Mode
 */
 int display_roll()
 {
+  //Serial.println("DISPLAY ROLL");
   int next_state = ROLL_TIMEOUT;
-  
+  String disp = String(roll);
   // update the display
-  update_OLED(roll);
+  if(game_type == D20)
+  {
+    update_OLED(disp);
+	  // update the LED
+	  if(roll == die_sidedness)
+	  {
+		  set_strip_color(yellow);
+	  }
+	  else if(roll == 1)
+	  {
+		  set_strip_color(red);
+	  }
+	  else
+	  {
+		set_strip_color(blue);
+	  }
 
-  // update the LED
-  if(roll == die_sidedness)
-  {
-    set_strip_color(yellow);
+	  // send HTTP POST to Discord Server
+	  if(WiFi.status() == WL_CONNECTED)
+	  {
+  		send_http_request(roll);
+  		yield();
+	  }
   }
-  else if(roll == 1)
+  else if(game_type == MAGIC_8)
   {
-    set_strip_color(red);
-  }
-  else
-  {
-    set_strip_color(blue);
-  }
-
-  // send HTTP POST to Discord Server
-  if(WiFi.status() == WL_CONNECTED)
-  {
-    send_http_request(roll);
-    yield();
+	  const String RESPONSES[] = 
+	  {"Certainly", "Mmhmm", "No doubt", "Yes", "Do it", "Probly",
+	   "Most likely", "Sure", "Yep", "For sure", "Ummm", "Ask later", "Can't say", "Dunno", "What?", "No", "No way",
+	   "Probly not", "Nuh-uh", "Doubt it"};
+	   disp = RESPONSES[roll];
+     update_OLED(disp);
   }
   
   return next_state;
@@ -553,6 +569,7 @@ Post-Roll Timeout Mode
  */
 int roll_timeout()
 {
+  //Serial.println("ROLL TIMEOUT");
   int next_state = STANDBY;
   long timeout = millis() + 5000;
   while(millis() < timeout && button_hold(BUTTON_PIN) < 20)
@@ -571,9 +588,9 @@ Programming Mode
 */
 int progmode()
 {
+  //Serial.println("PROGMODE");
   int next_state = PROGMODE;
   const int MAX_SIDEDNESS = 20;
-  static int new_sidedness = 2;
 
   set_strip_color(green);
 
@@ -582,42 +599,20 @@ int progmode()
   int press_time = button_hold(BUTTON_PIN, 5);
   if(press_time > BUTTON_HOLD)
   {
-    die_sidedness = new_sidedness;
     // TODO save new_sidedness to PROGMEM
-    set_strip_color(black);
+    set_strip_color(blue);
     next_state = STANDBY;
   }
-  else if(press_time > BUTTON_PRESS)
+  else if(press_time > BUTTON_PRESS && game_type == D20)
   {
-    new_sidedness = (new_sidedness + 1) % (MAX_SIDEDNESS + 1);
-    if(new_sidedness < 2)
+    die_sidedness = (die_sidedness + 1) % (MAX_SIDEDNESS + 1);
+    if(die_sidedness < 2)
     {
-      new_sidedness = 2;
+      die_sidedness = 2;
     }
+    update_OLED(String(die_sidedness));
   }
-  update_OLED(new_sidedness);
-  return next_state;
-}
-
-/*
-WiFi Configuration mode
- - This mode hosts a web page so that you can connect to WiFi
- - Also allows you to input your Discord server
- - Once connected, we won't enter into this mode again, unless WiFi is lost
-
- - Can move to STANDBY state if button is pressed and held
-*/
-int wifi_config()
-{
-  int next_state = WIFI_CONFIG;
-  set_strip_color(purple);
-  const int BUTTON_HOLD_TIME = 1000; //ms
-  yield();
-  if(ssid != "" && password != "" && host != "" && start_client())
-  {
-    next_state = STANDBY;
-  }
-  else if(button_hold(BUTTON_PIN, 5) > BUTTON_HOLD_TIME)
+  else if(ssid != "" && password != "" && host != "" && start_client())
   {
     next_state = STANDBY;
   }
@@ -629,7 +624,6 @@ int wifi_config()
   {
     server.handleClient();
   }
-  
   return next_state;
 }
 
@@ -653,7 +647,7 @@ int button_hold(int btn_pin)
     yield();
   }
 
-  return (int)millis() - start_time;
+  return (int)(millis() - start_time);
 }
 
 int button_hold(int btn_pin, int debounce)
@@ -677,7 +671,7 @@ void set_strip_color(RgbColor c)
   strip.Show();
 }
 
-void update_OLED(int value)
+void update_OLED(String value)
 {
   display.clearDisplay();
   display.setCursor(0, 0);
@@ -689,7 +683,7 @@ void update_OLED(int value)
 
 void handleRoot() 
 {
-  const String website = "<h1>DnD20</h1> <form action='/submit' method='post'> <h2>WiFi Credentials</h2> SSID<input name='SSID' type='text'><br> password <input name='password' type='password'><br> <h2>Discord Info</h2> Server URL <input name='discord-server' type='text'><br> <input type='submit'> </form>";
+  const String website = "<h1>DnD20</h1> <form action='submit' method='POST'> <h2>WiFi Credentials</h2> SSID     <input name='SSID' type='text'><br> password <input name='password' type='password'><br>  <h2>Discord Info</h2> Server URL <input name='discord-server' type='text'><br> Bot Name <input name='bot-name' type='text'><br>  <h2>Game Selection</h2> <input type='radio' name='game-type' checked='true' value='D20'>D20<br> <input type='radio' name='game-type' value='Magic 8 Ball'>Magic 8 Ball<br> <br> <input type='submit'> </form>";
   server.send(200, "text/html", website);
 }
 
@@ -713,6 +707,18 @@ void handleSubmit()
       password = val;
       Serial.println("password: " + password);
     }
+  	else if(argname == "bot-name")
+  	{
+  		bot_name = val;
+  	}
+  	else if(argname == "game-type")
+  	{
+  		game_type = val;
+  		if(game_type == MAGIC_8)
+  		{
+  			die_sidedness = 20;
+  		}
+  	}
   }
   server.send(200, "text/html", "A OK");
 }
@@ -764,7 +770,7 @@ boolean start_client()
     password = "";
     ssid = "";
     //discord-server == "";
-    //player_name = "";
+    //bot_name = "";
   }
   return WiFi.status() == WL_CONNECTED;
 }
@@ -780,7 +786,7 @@ void send_http_request(int roll)
   }
 
   // This will send the request to the server
-  String message = "{\"username\": \"" + player_name + "\", \"content\": \"" + roll + "\"}";
+  String message = "{\"username\": \"" + bot_name + "\", \"content\": \"" + roll + "\"}";
   client.print(String("POST ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "User-Agent: BuildFailureDetectorESP8266\r\n" +
@@ -832,7 +838,7 @@ void initialize_devices()
 
 typedef int (* Generic_State_Function_Array)();
 Generic_State_Function_Array DnD20_States[] = 
-    {standby, rolling, display_roll, roll_timeout, progmode, wifi_config};
+    {standby, rolling, display_roll, roll_timeout, progmode};
 
 void setup()
 {
@@ -843,7 +849,8 @@ void setup()
 
 void loop()
 {
-  static int next_state = WIFI_CONFIG;
+  static int next_state = STANDBY;
   next_state = DnD20_States[next_state]();
+  //Serial.print("Next state: "); Serial.println(next_state);
   delay(1);
 }
