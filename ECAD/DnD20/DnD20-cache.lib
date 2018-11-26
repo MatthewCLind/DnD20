@@ -1,11 +1,11 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
-# Connector:Conn_01x03_Female
+# Connector_Conn_01x03_Female
 #
-DEF Connector:Conn_01x03_Female J 0 40 Y N 1 F N
+DEF Connector_Conn_01x03_Female J 0 40 Y N 1 F N
 F0 "J" 0 200 50 H V C CNN
-F1 "Connector:Conn_01x03_Female" 0 -200 50 H V C CNN
+F1 "Connector_Conn_01x03_Female" 0 -200 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -24,11 +24,11 @@ X Pin_3 3 -200 -100 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Connector:Conn_01x04_Female
+# Connector_Conn_01x04_Female
 #
-DEF Connector:Conn_01x04_Female J 0 40 Y N 1 F N
+DEF Connector_Conn_01x04_Female J 0 40 Y N 1 F N
 F0 "J" 0 200 50 H V C CNN
-F1 "Connector:Conn_01x04_Female" 0 -300 50 H V C CNN
+F1 "Connector_Conn_01x04_Female" 0 -300 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -50,11 +50,11 @@ X Pin_4 4 -200 -200 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Connector:USB_B_Micro
+# Connector_USB_B_Micro
 #
-DEF Connector:USB_B_Micro J 0 40 Y Y 1 F N
+DEF Connector_USB_B_Micro J 0 40 Y Y 1 F N
 F0 "J" -200 450 50 H V L CNN
-F1 "Connector:USB_B_Micro" -200 350 50 H V L CNN
+F1 "Connector_USB_B_Micro" -200 350 50 H V L CNN
 F2 "" 150 -50 50 H I C CNN
 F3 "" 150 -50 50 H I C CNN
 ALIAS USB_B_Mini
@@ -86,11 +86,11 @@ X Shield 6 -100 -400 100 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Device:C
+# Device_C
 #
-DEF Device:C C 0 10 N Y 1 F N
+DEF Device_C C 0 10 N Y 1 F N
 F0 "C" 25 100 50 H V L CNN
-F1 "Device:C" 25 -100 50 H V L CNN
+F1 "Device_C" 25 -100 50 H V L CNN
 F2 "" 38 -150 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -104,11 +104,11 @@ X ~ 2 0 -150 110 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Device:D_Photo
+# Device_D_Photo
 #
-DEF Device:D_Photo D 0 20 N N 1 F N
+DEF Device_D_Photo D 0 20 N N 1 F N
 F0 "D" 20 70 50 H V L CNN
-F1 "Device:D_Photo" -40 -110 50 H V C CNN
+F1 "Device_D_Photo" -40 -110 50 H V C CNN
 F2 "" -50 0 50 H I C CNN
 F3 "" -50 0 50 H I C CNN
 DRAW
@@ -123,11 +123,11 @@ X A 2 100 0 100 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Device:D_Schottky
+# Device_D_Schottky
 #
-DEF Device:D_Schottky D 0 40 N N 1 F N
+DEF Device_D_Schottky D 0 40 N N 1 F N
 F0 "D" 0 100 50 H V C CNN
-F1 "Device:D_Schottky" 0 -100 50 H V C CNN
+F1 "Device_D_Schottky" 0 -100 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -145,11 +145,11 @@ X A 2 150 0 100 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Device:R
+# Device_R
 #
-DEF Device:R R 0 0 N Y 1 F N
+DEF Device_R R 0 0 N Y 1 F N
 F0 "R" 80 0 50 V V C CNN
-F1 "Device:R" 0 0 50 V V C CNN
+F1 "Device_R" 0 0 50 V V C CNN
 F2 "" -70 0 50 V I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -162,11 +162,11 @@ X ~ 2 0 -150 50 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# DnD20:AP2112-3.3
+# DnD20-rescue_AP2112-3.3-DnD20
 #
-DEF DnD20:AP2112-3.3 U 0 40 Y Y 1 F N
+DEF DnD20-rescue_AP2112-3.3-DnD20 U 0 40 Y Y 1 F N
 F0 "U" -150 250 60 H V C CNN
-F1 "DnD20:AP2112-3.3" 50 -150 60 H V C CNN
+F1 "DnD20-rescue_AP2112-3.3-DnD20" 50 -150 60 H V C CNN
 F2 "" 50 150 60 H I C CNN
 F3 "" 50 150 60 H I C CNN
 DRAW
@@ -179,11 +179,11 @@ X OUT 5 450 150 200 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# DnD20:CP2104
+# DnD20-rescue_CP2104-DnD20
 #
-DEF DnD20:CP2104 U 0 40 Y Y 1 F N
+DEF DnD20-rescue_CP2104-DnD20 U 0 40 Y Y 1 F N
 F0 "U" -650 1150 60 H V C CNN
-F1 "DnD20:CP2104" -500 -1050 60 H V C CNN
+F1 "DnD20-rescue_CP2104-DnD20" -500 -1050 60 H V C CNN
 F2 "" 0 0 60 H I C CNN
 F3 "" 0 0 60 H I C CNN
 DRAW
@@ -215,11 +215,11 @@ X #RST 9 450 900 200 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# DnD20:ESP12
+# DnD20-rescue_ESP12-DnD20
 #
-DEF DnD20:ESP12 U 0 40 Y Y 1 F N
+DEF DnD20-rescue_ESP12-DnD20 U 0 40 Y Y 1 F N
 F0 "U" 350 350 60 H V C CNN
-F1 "DnD20:ESP12" -400 350 60 H V C CNN
+F1 "DnD20-rescue_ESP12-DnD20" -400 350 60 H V C CNN
 F2 "" -50 0 60 H I C CNN
 F3 "" -50 0 60 H I C CNN
 DRAW
@@ -250,11 +250,11 @@ X GND 9 600 -700 200 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# DnD20:JSTPH
+# DnD20-rescue_JSTPH-DnD20
 #
-DEF DnD20:JSTPH U 0 40 Y Y 1 F N
+DEF DnD20-rescue_JSTPH-DnD20 U 0 40 Y Y 1 F N
 F0 "U" 100 -250 60 H V C CNN
-F1 "DnD20:JSTPH" -250 0 60 H V C CNN
+F1 "DnD20-rescue_JSTPH-DnD20" -250 0 60 H V C CNN
 F2 "" 0 0 60 H I C CNN
 F3 "" 0 0 60 H I C CNN
 DRAW
@@ -266,11 +266,11 @@ X ~ 2 0 300 200 D 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# DnD20:MCP73831_2
+# DnD20-rescue_MCP73831_2-DnD20
 #
-DEF DnD20:MCP73831_2 U 0 40 Y Y 1 F N
+DEF DnD20-rescue_MCP73831_2-DnD20 U 0 40 Y Y 1 F N
 F0 "U" -250 200 60 H V C CNN
-F1 "DnD20:MCP73831_2" 0 -200 60 H V C CNN
+F1 "DnD20-rescue_MCP73831_2-DnD20" 0 -200 60 H V C CNN
 F2 "" 0 0 60 H I C CNN
 F3 "" 0 0 60 H I C CNN
 DRAW
@@ -283,11 +283,11 @@ X PROG 5 450 0 200 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# DnD20:switch
+# DnD20-rescue_switch-DnD20
 #
-DEF DnD20:switch U 0 40 Y Y 1 F N
+DEF DnD20-rescue_switch-DnD20 U 0 40 Y Y 1 F N
 F0 "U" 250 50 60 H V C CNN
-F1 "DnD20:switch" -150 50 60 H V C CNN
+F1 "DnD20-rescue_switch-DnD20" -150 50 60 H V C CNN
 F2 "" 0 0 60 H I C CNN
 F3 "" 0 0 60 H I C CNN
 DRAW
@@ -300,11 +300,11 @@ X B B 350 -150 200 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# Sensor_Motion:MMA8653FCR1
+# Sensor_Motion_MMA8653FCR1
 #
-DEF Sensor_Motion:MMA8653FCR1 U 0 20 Y Y 1 F N
+DEF Sensor_Motion_MMA8653FCR1 U 0 20 Y Y 1 F N
 F0 "U" -300 350 50 H V L CNN
-F1 "Sensor_Motion:MMA8653FCR1" 50 -350 50 H V L CNN
+F1 "Sensor_Motion_MMA8653FCR1" 50 -350 50 H V L CNN
 F2 "Package_DFN_QFN:DFN-10_2x2mm_P0.4mm" 50 -450 50 H I L CNN
 F3 "" -200 -50 50 H I C CNN
 $FPLIST
@@ -325,11 +325,11 @@ X GND 9 -100 -400 100 U 50 50 1 1 W
 ENDDRAW
 ENDDEF
 #
-# Transistor_BJT:2N2219
+# Transistor_BJT_2N2219
 #
-DEF Transistor_BJT:2N2219 Q 0 0 Y N 1 F N
+DEF Transistor_BJT_2N2219 Q 0 0 Y N 1 F N
 F0 "Q" 200 75 50 H V L CNN
-F1 "Transistor_BJT:2N2219" 200 0 50 H V L CNN
+F1 "Transistor_BJT_2N2219" 200 0 50 H V L CNN
 F2 "Package_TO_SOT_THT:TO-39-3" 200 -75 50 H I L CIN
 F3 "" 0 0 50 H I L CNN
 ALIAS BC140 BC141
@@ -348,11 +348,11 @@ X C 3 100 200 100 D 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# power:+3.3V
+# power_+3.3V
 #
-DEF power:+3.3V #PWR 0 0 Y Y 1 F P
+DEF power_+3.3V #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -150 50 H I C CNN
-F1 "power:+3.3V" 0 140 50 H V C CNN
+F1 "power_+3.3V" 0 140 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 ALIAS +3.3V
@@ -364,11 +364,11 @@ X +3V3 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# power:+BATT
+# power_+BATT
 #
-DEF power:+BATT #PWR 0 0 Y Y 1 F P
+DEF power_+BATT #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -150 50 H I C CNN
-F1 "power:+BATT" 0 140 50 H V C CNN
+F1 "power_+BATT" 0 140 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -379,11 +379,11 @@ X +BATT 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# power:GND
+# power_GND
 #
-DEF power:GND #PWR 0 0 Y Y 1 F P
+DEF power_GND #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -250 50 H I C CNN
-F1 "power:GND" 0 -150 50 H V C CNN
+F1 "power_GND" 0 -150 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -392,11 +392,11 @@ X GND 1 0 0 0 D 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# power:VCOM
+# power_VCOM
 #
-DEF power:VCOM #PWR 0 0 Y Y 1 F P
+DEF power_VCOM #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -150 50 H I C CNN
-F1 "power:VCOM" 0 150 50 H V C CNN
+F1 "power_VCOM" 0 150 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
