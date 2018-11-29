@@ -1,0 +1,9 @@
+* Firmware
+** TODO
+ - [ ] Make a nicer "OK" web response page
+ - [ ] Signify when you've gotten the same roll twice
+ - [ ] add a third mode: web mode, and remove the web stuff from prog mode
+ - [ ] make it so press + hold indicates on OLED or Neopixel when you've held long enough
+
+** DnD20.h questions
+ - should/must I intialize my const variables here?
