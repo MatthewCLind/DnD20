@@ -20,6 +20,8 @@
 // ----------------------------------
 //            DnD20.ino
 // ----------------------------------
+
+// general state data about what the device should do
 struct device_data
 {
   byte mode;
@@ -31,7 +33,7 @@ struct device_data
 
 const byte NUM_MODES  = 3;
 const byte GAME_MODE  = 0;
-const byte PROGMODE   = 1;
+const byte GAME_SETUP = 1;
 const byte WIFI_SETUP = 2;
 
 const String mode_display_strings[NUM_MODES] = {"Game Mode", "Game Setup", "WiFi Setup"};
@@ -40,11 +42,11 @@ const byte D20 = 0;
 const byte MAGIC_8 = 1;
 
 void game_mode();
-void progmode();
+void game_setup();
 void wifi_setup();
 
 typedef void (* Generic_State_Function_Array)();
-Generic_State_Function_Array DnD20_Modes[NUM_MODES] = {game_mode, progmode, wifi_setup};
+Generic_State_Function_Array DnD20_Modes[NUM_MODES] = {game_mode, game_setup, wifi_setup};
 
 
 // ----------------------------------
@@ -77,11 +79,6 @@ void update_OLED(String value);
 
 // Button
 const int BUTTON_PIN = 14;
-/*
-bool button_press(int btn_pin, int max_time = 500, int min_time = 5);
-bool button_hold(int btn_pin, int min_time);
-int button_time(int btn_pin);
-*/
 int button_mode_select();
 int button_mode_select(bool* button_press);
 
@@ -89,15 +86,17 @@ int button_mode_select(bool* button_press);
 // ----------------------------------
 //           EEPROM_Management.ino
 // ----------------------------------
+
+// location and size of a single data point
 struct EEPROM_data
 {
   int maddr;
   int msize;
 };
 
+// locations of all of the relevant data stored in EEPROM
 struct EEPROM_Map
 {
-  EEPROM_data mode;
   EEPROM_data type;
   EEPROM_data die_sidedness;
   EEPROM_data url;
@@ -118,6 +117,7 @@ void EEPROM_load_data();
 //           WiFi.ino
 // ----------------------------------
 
+// info for the webhook
 struct discord_info
 {
   String url;
@@ -125,6 +125,7 @@ struct discord_info
   String bot_name;
 } discord_data;
 
+// local wifi credentials
 struct wifi_info
 {
   String ssid;

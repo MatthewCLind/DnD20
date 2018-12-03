@@ -2,6 +2,7 @@
 //            NeoPixel
 // ----------------------------------
 
+// change the neopixel to a pre-defined color
 void set_neopixel_color(RgbColor c)
 {
   for(int i = 0; i < NUM_NEOPIXELS; i++)
@@ -15,6 +16,9 @@ void set_neopixel_color(RgbColor c)
 // ----------------------------------
 //               OLED
 // ----------------------------------
+
+// write something to the OLED,
+// the text will be resized based on the number of characters
 void update_OLED(String value)
 {
   //             font sizes  1   2   3   4
@@ -83,6 +87,14 @@ void update_OLED(String value)
   display.display();
 }
 
+// display a die type on the OLED
+void display_dN(int N)
+{
+  String die_type = "d";
+  die_type.concat(N);
+  update_OLED(die_type);
+}
+
 void display_mode(int zmode)
 {
   String display_string = mode_display_strings[zmode];
@@ -92,31 +104,9 @@ void display_mode(int zmode)
 // ----------------------------------
 //             Button
 // ----------------------------------
-/*
-bool button_press(int btn_pin, int max_time, int min_time)
-{
-  int button_down_time = button_time(btn_pin);
-  return button_down_time < max_time && button_down_time > min_time;
-}
 
-bool button_hold(int btn_pin, int min_time)
-{
-  int button_down_time = button_time(btn_pin);
-  return button_down_time > min_time;
-}
-
-int button_time(int btn_pin)
-{
-  long start_time = millis();
-  while(digitalRead(btn_pin) == LOW)
-  {
-    // wait for release
-    yield();
-  }
-
-  return (int)(millis() - start_time);
-}*/
-
+// cycle through the modes, 
+// button_press will be set to true if the button was only clicked
 int button_mode_select(bool* button_press)
 {
   *button_press = false;
@@ -133,7 +123,8 @@ int button_mode_select(bool* button_press)
       mode_change = true;
       next_mode++;
       next_mode = next_mode % NUM_MODES;
-      display_mode(next_mode);
+      String display_string = mode_display_strings[next_mode];
+      update_OLED(display_string);
       start_time = millis(); // so you can continue to cycle through
     }
     yield();
@@ -141,13 +132,13 @@ int button_mode_select(bool* button_press)
 
   if(!mode_change && elapsed_time > 10 && elapsed_time < 1000)
   {
-    Serial.println("we think it is a button");
     *button_press = true;
   }
 
   return next_mode;
 }
 
+// cycle through the button modes
 int button_mode_select()
 {
   int next_mode = device_state.mode;

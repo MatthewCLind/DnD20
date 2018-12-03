@@ -3,15 +3,38 @@
  * Author: Matthew Lind
  * last revision: 11/23/2018
  * 
+ * License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
+ * 
+ * Overview:
+ * DnD20 overall is a device for sharing your dice rolls online through Discord.
+ * If you want to set this device up, you'll need to create a Webhook on your Discord server.
+ * 
+ * Organization:
+ * DnD20.h holds all of the declarations. Arduino will stitch all of these files together
+ *  when compiled. They are split up for convenience only, so DnD20.h allows the files
+ *  to "be on the same page". Get it?
+ * DnD20.ino is the main file where the 3 modes live, Game Mode, Game Setup, and WiFi Setup.
+ * Devices.ino is for device-level functions.
+ * EEPROM_Management.ino is functions to save and load configuration data
+ * WiFi.ino handles the Access Point and HTTP Client code
+ * 
+ * 
  * Sources:
  * https://github.com/Makuna/NeoPixelBus
  * https://github.com/adafruit/Adafruit_SSD1306
- * 
  */
 
 #include "DnD20.h"
 
 
+/*
+ * Game Mode is the main mode of the device.
+ * Depending on configuration, the device will act as a:
+ *  - D20, D12, D10, D8, D6, or D4
+ *   or
+ *  - a Magic 8 Ball
+ * Only the dice send HTTP POSTs to discord (if connected to WiFi)
+ */
 void game_mode()
 { 
   // game_mode setup block
@@ -34,6 +57,10 @@ void game_mode()
 
   if(button_click)
   {    
+    // blink the LED to separate identical rolls
+    set_neopixel_color(colors.black);
+    
+    delay(100);
     // make the random generator more random
     int seed = millis();
     randomSeed(seed);
@@ -71,6 +98,7 @@ void game_mode()
        "Probly not", "Nuh-uh", "Doubt it"};
 
        update_OLED(RESPONSES[device_state.roll - 1]);
+       set_neopixel_color(colors.purple);
     }
 
     delay(20); // avoid button jitter
@@ -85,7 +113,13 @@ void game_mode()
 }
 
 
-void progmode()
+/*
+ * Game Setup is the mode where you can cycle through different dice,
+ * or set it to be a Magic 8 Ball
+ * 
+ * To cycle to different modes, press and hold the button
+ */
+void game_setup()
 {
   const int MAX_SIDEDNESS = 20;
 
@@ -110,8 +144,7 @@ void progmode()
       Serial.println(device_state.die_sidedness);
       for(int i = 0; i < num_dice; i++)
       {
-        Serial.println(dice_types[i]);
-        if(device_state.die_sidedness = dice_types[i])
+        if(device_state.die_sidedness == dice_types[i])
         {
           current_die_index = i;
           break;
@@ -128,22 +161,21 @@ void progmode()
       else
       {
         device_state.die_sidedness = dice_types[current_die_index];
-        String die_type = "d";
-        die_type.concat(device_state.die_sidedness);
-        update_OLED(die_type);
+        display_dN(device_state.die_sidedness);
       }
     }
     else // game type == Magic 8 Ball, cycle back to D20
     {
       device_state.game_type = D20;
       device_state.die_sidedness = 20;
+      display_dN(device_state.die_sidedness);
     }
 
     delay(20); // avoid button jitter
   }
 
   // set up for the next mode
-  if(device_state.mode != PROGMODE)
+  if(device_state.mode != GAME_SETUP)
   {
     set_neopixel_color(colors.black);
     update_OLED("");
@@ -152,14 +184,20 @@ void progmode()
   }
 }
 
-
+/*
+ * WiFi setup hosts an access point that you can log onto with a browser
+ *  SSID: D20
+ *  Password: prestidigitation
+ *  
+ * Once in this mode, the OLED will display whatever IP address you should connect to
+ * Upon connecting, you will be served a web page to put in your Discord and WiFi credentials
+ */
 void wifi_setup()
 {
   if(device_state.run_mode_setup)
   {
     start_server();
     set_neopixel_color(colors.orange);
-    display_mode(device_state.mode);
     device_state.run_mode_setup = false;
   }
 
@@ -216,16 +254,7 @@ void setup()
 void loop()
 { 
   DnD20_Modes[device_state.mode]();
-
-  /*bool do_stuff;
-  int i = button_mode_select(&do_stuff);
-  if(do_stuff)
-  {
-    Serial.println("In Here");
-  }*/
-  
   
   // must give time for WiFi functions to avoid watchdog timer
   yield();
-  
 }
